@@ -30,37 +30,30 @@ public class Main {
 
 
     public static List<Employee> parseXML(String fileName) throws ParserConfigurationException, IOException, SAXException {
-
+        List<Employee> list = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(fileName);
         Node root = doc.getDocumentElement();
-        List<Employee> list = read(root);
-        return list;
-    }
 
-    private static List<Employee> read(Node node) {
-
-        ArrayList<String> al = new ArrayList<>();
-        List<Employee> list = new ArrayList<>();
-        NodeList nodeList = node.getChildNodes();
+        NodeList nodeList = root.getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node1 = nodeList.item(i);
-            if (Node.ELEMENT_NODE == node1.getNodeType()) {
-                Element element = (Element) node1;
+            Node node = nodeList.item(i);
 
-                String text1 = element.getTextContent();
-                for (String a : text1.split("\n")) {
-                    al.add(a.trim());
-                }
+            if (Node.ELEMENT_NODE == node.getNodeType()) {
+                Element element = (Element) node;
+
+                long id = Long.parseLong(element.getElementsByTagName("id").item(0).getTextContent());
+                String firstName = element.getElementsByTagName("firstName").item(0).getTextContent();
+                String lastName = element.getElementsByTagName("lastName").item(0).getTextContent();
+                String country = element.getElementsByTagName("country").item(0).getTextContent();
+                int age = Integer.parseInt(element.getElementsByTagName("age").item(0).getTextContent());
+
+                Employee employee = new Employee(id, firstName, lastName, country, age);
+                list.add(employee);
             }
         }
-        Employee employee1 = new Employee(Long.parseLong(al.get(1)), al.get(2), al.get(3), al.get(4), Integer.parseInt(al.get(5)));
-        Employee employee2 = new Employee(Long.parseLong(al.get(8)), al.get(9), al.get(10), al.get(11), Integer.parseInt(al.get(12)));
-
-        list.add(employee1);
-        list.add(employee2);
         return list;
     }
 
